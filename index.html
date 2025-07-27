@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Farmacia Educativa - Analgésicos</title>
+  <style>
+    body { font-family: sans-serif; margin:20px; }
+    #quiz { max-width: 700px; margin:auto; }
+    .question { margin:10px 0; }
+    .btn { margin-top: 15px; padding:8px 12px; cursor:pointer; }
+    #progress { margin-bottom:20px; }
+    h2 { color: darkblue; }
+  </style>
+</head>
+<body>
+  <div id="quiz">
+    <h1>Farmacia Educativa - Grupo: <span id="grupoDisplay">Analgésicos</span></h1>
+    <h2>Medicamento <span id="indexDisplay">1</span>/20</h2>
+    <div id="info"></div>
+    <form id="form"></form>
+    <button id="nextBtn" class="btn" disabled>Siguiente</button>
+    <div id="progress"></div>
+  </div>  <script>
+    const analgesicos = [
+      {
+        nombre: 'Acetaminofén (Paracetamol)',
+        info: 'Indicaciones: dolor leve a moderado, fiebre. Dosis: 500-1000 mg c/4-6h, máx. 4g/día. Precauciones: hepatotoxicidad.',
+        preguntas: [
+          { q: 'Dosis máxima diaria para adultos sanos:', opciones: ['3g','4g','6g'], correcta:1 },
+          { q: '¿Tiene acción antiinflamatoria?', opciones: ['Sí','No'], correcta:1 },
+          { q: 'Riesgo principal con alcohol:', opciones: ['Gastritis','Daño hepático','Somnolencia'], correcta:1 }
+        ]
+      },
+      {
+        nombre: 'Ibuprofeno',
+        info: 'AINE. Dosis: 400-800 mg c/6-8h, máx. 2400 mg/día. Riesgos: gastrointestinales, renales.',
+        preguntas: [
+          { q: 'Dosis máxima diaria:', opciones: ['1200 mg','2400 mg','3600 mg'], correcta:1 },
+          { q: '¿Puede causar problemas renales?', opciones: ['Sí','No'], correcta:0 },
+          { q: '¿Es antipirético y antiinflamatorio?', opciones: ['Solo antipirético','Ambos','Solo antiinflamatorio'], correcta:1 }
+        ]
+      },
+      {
+        nombre: 'Diclofenaco',
+        info: 'Indicaciones: dolor inflamatorio. Dosis: 50 mg c/8h, máx. 150 mg/día. Riesgo GI.',
+        preguntas: [
+          { q: 'Dosis máxima diaria:', opciones: ['75 mg','150 mg','200 mg'], correcta:1 },
+          { q: 'Uso prolongado puede afectar:', opciones: ['Hígado','Riñón','Estómago'], correcta:2 }
+        ]
+      },
+      {
+        nombre: 'Tramadol',
+        info: 'Analgésico opioide. Dosis: 50-100 mg c/6h, máx. 400 mg/día. Riesgo: dependencia, somnolencia.',
+        preguntas: [
+          { q: 'Tipo de analgésico:', opciones: ['Opioide','AINE','No opiáceo'], correcta:0 },
+          { q: 'Riesgo principal:', opciones: ['Fotosensibilidad','Dependencia','Gingivitis'], correcta:1 }
+        ]
+      },
+      {
+        nombre: 'Naproxeno',
+        info: 'Dosis: 250-500 mg c/12h. Riesgo: GI, renal. Uso prolongado supervisado.',
+        preguntas: [
+          { q: 'Frecuencia de dosis:', opciones: ['Cada 6h','Cada 12h','Cada 8h'], correcta:1 },
+          { q: 'Riesgo con uso prolongado:', opciones: ['Ceguera','GI/Renal','Dermatitis'], correcta:1 }
+        ]
+      },
+      // Agrega aquí los otros 15 medicamentos usando el mismo formato
+    ];
+
+    let idx = 0;
+    const infoDiv = document.getElementById('info');
+    const form = document.getElementById('form');
+    const nextBtn = document.getElementById('nextBtn');
+    const indexDisplay = document.getElementById('indexDisplay');
+    const progress = document.getElementById('progress');
+
+    function render() {
+      const med = analgesicos[idx];
+      indexDisplay.textContent = idx + 1;
+      infoDiv.innerHTML = `<h3>${med.nombre}</h3><p>${med.info}</p>`;
+      form.innerHTML = '';
+      med.preguntas.forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'question';
+        div.innerHTML = `<p>${p.q}</p>` +
+          p.opciones.map((opt, j) =>
+            `<label><input name="q${i}" type="radio" value="${j}"> ${opt}</label><br>`
+          ).join('');
+        form.appendChild(div);
+      });
+      nextBtn.disabled = true;
+      form.addEventListener('change', () => {
+        const answered = analgesicos[idx].preguntas.every((_, i) =>
+          form[`q${i}`].value !== undefined
+        );
+        nextBtn.disabled = !answered;
+      });
+      progress.textContent = `Progreso: ${idx + 1} de ${analgesicos.length}`;
+    }
+
+    nextBtn.addEventListener('click', () => {
+      const med = analgesicos[idx];
+      let correct = true;
+      med.preguntas.forEach((p, i) => {
+        const val = parseInt(form[`q${i}`].value, 10);
+        if (val !== p.correcta) correct = false;
+      });
+      alert(correct ? 'Muy bien ✅' : 'Revisa tus respuestas');
+      idx++;
+      if (idx < analgesicos.length) {
+        render();
+      } else {
+        alert('Has completado todos los medicamentos del grupo 🥳');
+        // Podrías redirigir al siguiente grupo
+      }
+    });
+
+    render();
+  </script></body>
+</html>
